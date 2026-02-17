@@ -1,0 +1,178 @@
+import java.io.*;
+import java.util.ArrayList;
+
+// ************
+// Class 4: MinistryManager 
+//**************
+
+class MinistryManager {
+
+    
+    //here I declared two arraylists, one for missing persons and one for unidentified victims
+    private ArrayList<MissingPerson> missingList;
+    private ArrayList<UnidentifiedBody> bodiesList;
+    
+// File Names for Binary Files
+    private final String MISSING_FILE = "missing_data.dat";
+    private final String BODIES_FILE = "bodies_data.dat";
+    
+   
+    //Array of objects which is a list of the hospitals, so the ministry employee can choose the hospital number while adding a new ub
+    private String[] approvedHospitals = {"Shifa Hospital", "Nasser Hospital", "European Hospital", "Aqsa Hospital", "Indonesian Hospital"};
+
+
+    public MinistryManager() {
+        missingList = new ArrayList<>();
+        bodiesList = new ArrayList<>();
+        loadData(); // load binary files on startup
+    }
+
+ 
+   //Method for showing the list of hospitals 
+    public void showHospitals() {
+        System.out.println("Select Hospital From List:");
+        for (int i = 0; i < approvedHospitals.length; i++) {
+            System.out.println((i + 1) + ". " + approvedHospitals[i]);
+        }
+    }
+
+    
+    //method for getting the hospital name depending on the chosen num.
+    public String getHospitalFromList(int index) {
+        if (index >= 1 && index <= approvedHospitals.length) {
+            return approvedHospitals[index - 1];
+        }
+        return "Unknown Hospital"; 
+    }
+ 
+    
+    
+    //a method for adding objects to our first arraylist
+    public void addMissingPerson(MissingPerson p) {
+        missingList.add(p);
+        saveData(); // Auto save
+        System.out.println("++ Report added successfully.");
+        checkForMatch(p); 
+//method to make an automatic matching when a missing person is added if there's any unidentified body with the same features'
+    }
+
+//method for adding unidentified body
+    public void addBody(UnidentifiedBody b) {
+        bodiesList.add(b);
+        saveData();
+        System.out.println("++ Body record added successfully.");
+    }
+
+    // delete method
+    public void deleteMissingPerson(String id) {
+        boolean removed = missingList.removeIf(p -> p.getId().equalsIgnoreCase(id));
+        if (removed) {
+            saveData();
+            System.out.println(">> Record deleted successfully.");
+        } else {
+            System.out.println(">> ID not found!");
+        }
+    }
+
+   // Methid for editing
+    public void editMissingPersonPhone(String id, String newPhone) {
+        boolean found = false;
+        for (MissingPerson p : missingList) {
+            if (p.getId().equalsIgnoreCase(id)) {
+                p.setPhone(newPhone);
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            saveData();
+            System.out.println(">> Phone number updated.");
+        } else {
+            System.out.println(">> ID not found!");
+        }
+    }
+
+   //  Search method
+    public void searchByName(String name) {
+        System.out.println("\n--- Search Results ---");
+        boolean found = false;
+        for (MissingPerson p : missingList) {
+            if (p.getName().toLowerCase().contains(name.toLowerCase())) {
+                System.out.println(p);
+                System.out.println("----------------------");
+                found = true;
+            }
+        }
+        if (!found) System.out.println("No records found with that name.");
+    }
+
+ // Show All but if the list is empty it will show a message instead
+    public void showAllMissing() {
+        System.out.println("\n--- All Missing People ---");
+        if (missingList.isEmpty()) System.out.println("List is empty.");
+        for (MissingPerson p : missingList) {
+            System.out.println(p);
+            System.out.println("--------------------------");
+        }
+    }
+//same here but this one is for showing the unidentified bodies
+    public void showAllBodies() {
+        System.out.println("\n--- All Unidentified Bodies ---");
+        if (bodiesList.isEmpty()) System.out.println("List is empty.");
+        for (UnidentifiedBody b : bodiesList) {
+            System.out.println(b);
+            System.out.println("--------------------------");
+        }
+    }
+
+    // here I wrote a method to make an automatic matching between the two lists
+    private void checkForMatch(MissingPerson mp) {
+
+        System.out.println("\n[System] Checking for potential matches...");
+        for (UnidentifiedBody ub : bodiesList) {
+            // there will be a matching if the genders are the same  and the age of the mp is in the range of ub age
+           
+            boolean genderMatch = mp.getGender().equalsIgnoreCase(ub.getGender());
+            //equalsIgnoreCase is a method that compares the strings while ignoring their case, capital or small 
+            boolean ageMatch = (mp.getAge() >= ub.getMinAge() && mp.getAge() <= ub.getMaxAge());
+           
+            if (genderMatch && ageMatch) {
+                System.out.println("!!! POTENTIAL MATCH FOUND !!!");
+                //we'll show a message to the mp family about which hospital the ub is  in
+                System.out.println("Body ID: " + ub.getId() + " is currently in: " + ub.getHospitalName());
+                System.out.println("Please contact the hospital immediately.");
+            }
+        }
+    }
+
+
+//  BINARY FILE I/O 
+    private void saveData() {
+        //I used try and catch to catch the exception if the file wasn't found'
+        try (ObjectOutputStream out1 = new ObjectOutputStream(new FileOutputStream(MISSING_FILE));
+             ObjectOutputStream out2 = new ObjectOutputStream(new FileOutputStream(BODIES_FILE))) {
+            //writeObject is for storing our two arraylists in the new binary files
+            out1.writeObject(missingList);
+            out2.writeObject(bodiesList);
+           
+        } catch (IOException e) {
+            System.out.println("Error saving data: " + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadData() {
+        try (ObjectInputStream in1 = new ObjectInputStream(new FileInputStream(MISSING_FILE))) {
+            missingList = (ArrayList<MissingPerson>) in1.readObject();
+        } catch (Exception e) {
+            // File might not exist yet, ignore
+        }
+
+        try (ObjectInputStream in2 = new ObjectInputStream(new FileInputStream(BODIES_FILE))) {
+            bodiesList = (ArrayList<UnidentifiedBody>) in2.readObject();
+        } catch (Exception e) {
+            // File might not exist yet, ignore
+        }
+    }
+}
+// Taysira Alaqad
