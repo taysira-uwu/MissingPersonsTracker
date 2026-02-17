@@ -1,0 +1,52 @@
+import java.io.Serializable;
+
+//***********
+// Class 1: Person (Abstract class and superclass)
+//*************
+
+//Person class is the superclass and abstract class
+abstract class Person implements Serializable {
+//I applied Encapsulation by making the feilds private
+    
+    
+    private String id; // I added ID for searching and deleting
+    private String description;
+    private String location; // Last seen or found location 
+    private String gender;
+
+   //constructor
+    public Person() {}
+
+    // Constructor contains all the Fields
+    public Person(String id, String description, String location, String gender) {
+        this.id = id;
+        this.description = description;
+        this.location = location;
+        this.gender = gender;
+    }
+
+   //Setters & Getters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
+
+    // Abstract method and I'll write the body later depending on each subclass I will use the method in.'
+    public abstract String getDetails();
+
+   // Overridden toString
+    @Override
+    public String toString() {
+        return "ID: " + id + " | Gender: " + gender + " | Location: " + location + "\n   Desc: " + description;
+    }
+}
+// Taysira Alaqad
+
+
