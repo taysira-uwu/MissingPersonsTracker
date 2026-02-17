@@ -1,0 +1,50 @@
+//********
+// Class 2: MissingPerson which Inherits from Person 
+//*******
+
+class MissingPerson extends Person {
+    // Specific Fields for this class
+    private String name;
+    private int age;
+    private String phone;
+    private String lastSeenDate;
+
+    // Constructor 1: No-Args
+    public MissingPerson() { super(); }
+
+    // Constructor 2 with All Fields as arguments
+    public MissingPerson(String id, String description, String location, String gender, 
+                         String name, int age, String phone, String lastSeenDate) {
+     //we should call the superclass constructor
+        super(id, description, location, gender); 
+       
+        this.name = name;
+        this.age = age;
+        this.phone = phone;
+        this.lastSeenDate = lastSeenDate;
+    }
+
+    // Mutators & Accessors
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getLastSeenDate() { return lastSeenDate; }
+    public void setLastSeenDate(String lastSeenDate) { this.lastSeenDate = lastSeenDate; }
+
+    @Override
+    public String getDetails() {
+        return "Type: MISSING PERSON | Name: " + name;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "\n   Name: " + name + " | Age: " + age + " | Date: " + lastSeenDate + " | Contact: " + phone;
+    }
+}
+// Taysira Alaqad
